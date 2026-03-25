@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+{% block title %}{{ post['title'] }} — Inkwell{% endblock %}
+
+{% block content %}
+<div class="detail-wrapper">
+
+  <div class="detail-nav">
+    <a href="{{ url_for('index') }}" class="back-link">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+      Back to all posts
+    </a>
+    <div class="detail-actions">
+      <a href="{{ url_for('edit_post', post_id=post['id']) }}" class="btn-outline">Edit</a>
+      <form method="POST" action="{{ url_for('delete_post', post_id=post['id']) }}" class="delete-form" data-entity="post" data-title="{{ post['title'] }}">
+        <button type="submit" class="btn-danger">Delete</button>
+      </form>
+    </div>
+  </div>
+
+  <article class="detail-article">
+    {% if post['image_url'] %}
+      <div class="detail-hero-image" style="background-image: url('{{ post['image_url'] }}')"></div>
+    {% endif %}
+    <header class="detail-header">
+      <div class="detail-meta">
+        <span class="detail-category">{{ post['category'] }}</span>
+        <span class="detail-date">{{ post['created_at'][:10] }}</span>
+      </div>
+      <h1 class="detail-title">{{ post['title'] }}</h1>
+      {% if post['updated_at'] != post['created_at'] %}
+        <p class="detail-updated">Updated {{ post['updated_at'][:10] }}</p>
+      {% endif %}
+    </header>
+
+    <div class="detail-divider"></div>
+
+    <div class="detail-content">
+      {% for paragraph in post['content'].split('\n\n') %}
+        {% if paragraph.strip() %}
+          <p>{{ paragraph.strip() }}</p>
+        {% endif %}
+      {% endfor %}
+    </div>
+  </article>
+
+  <section class="comments-section">
+    <header class="comments-header">
+      <h2>Comments</h2>
+      <span>{{ comments|length }} total</span>
+    </header>
+
+    <form method="POST" action="{{ url_for('create_comment', post_id=post['id']) }}" class="comment-form">
+      <div class="comment-form-row">
+        <label for="author">Name</label>
+        <input id="author" name="author" type="text" maxlength="80" placeholder="Your name (optional)" class="field-input" />
+      </div>
+      <div class="comment-form-row">
+        <label for="comment-content">Comment</label>
+        <textarea id="comment-content" name="content" class="field-textarea comment-textarea" required placeholder="Write your thoughts..."></textarea>
+      </div>
+      <button type="submit" class="btn-primary">Add Comment</button>
+    </form>
+
+    <div class="comments-list">
+      {% if comments %}
+        {% for comment in comments %}
+          <article class="comment-card">
+            <div class="comment-meta">
+              <strong>{{ comment['author'] or 'Anonymous' }}</strong>
+              <span>{{ comment['created_at'][:16] }}</span>
+            </div>
+            <p class="comment-content">{{ comment['content'] }}</p>
+            {% if comment['updated_at'] != comment['created_at'] %}
+              <p class="comment-updated">Edited {{ comment['updated_at'][:16] }}</p>
+            {% endif %}
+
+            <div class="comment-actions">
+              <button type="button" class="btn-outline comment-edit-toggle" data-target="comment-edit-{{ comment['id'] }}">Edit</button>
+              <form method="POST" action="{{ url_for('delete_comment', comment_id=comment['id']) }}" class="delete-form" data-entity="comment" data-title="this comment">
+                <button type="submit" class="btn-danger">Delete</button>
+              </form>
+            </div>
+
+            <form method="POST" action="{{ url_for('edit_comment', comment_id=comment['id']) }}" id="comment-edit-{{ comment['id'] }}" class="comment-edit-form hidden">
+              <div class="comment-form-row">
+                <label for="edit-author-{{ comment['id'] }}">Name</label>
+                <input id="edit-author-{{ comment['id'] }}" name="author" type="text" maxlength="80" class="field-input" value="{{ comment['author'] }}" />
+              </div>
+              <div class="comment-form-row">
+                <label for="edit-content-{{ comment['id'] }}">Comment</label>
+                <textarea id="edit-content-{{ comment['id'] }}" name="content" class="field-textarea comment-textarea" required>{{ comment['content'] }}</textarea>
+              </div>
+              <button type="submit" class="btn-primary">Save Changes</button>
+            </form>
+          </article>
+        {% endfor %}
+      {% else %}
+        <p class="no-comments">No comments yet. Be the first to add one.</p>
+      {% endif %}
+    </div>
+  </section>
+
+</div>
+{% endblock %}

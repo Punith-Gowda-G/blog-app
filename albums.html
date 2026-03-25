@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Albums — Inkwell{% endblock %}
+
+{% block content %}
+<div class="home-wrapper">
+
+  <div class="hero">
+    <span class="hero-label">Collection</span>
+    <h1 class="hero-title">Albums & <em>Galleries</em></h1>
+    <p class="hero-sub">Curated collections of visual moments and memories.</p>
+  </div>
+
+  <div class="albums-section">
+    {% if albums %}
+      <div class="albums-grid">
+        {% for album in albums %}
+          <a href="{{ url_for('album_detail', album_id=album['id']) }}" class="album-card">
+            <div class="album-cover" style="background-image: url('{{ album['cover_url'] }}')"></div>
+            <div class="album-info">
+              <h3>{{ album['title'] }}</h3>
+              <p class="album-meta">User #{{ album['user_id'] }}</p>
+            </div>
+          </a>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="empty-state">
+        <div class="empty-icon">📷</div>
+        <h3>No albums yet</h3>
+        <p>Albums will appear here when imported.</p>
+      </div>
+    {% endif %}
+  </div>
+
+</div>
+{% endblock %}

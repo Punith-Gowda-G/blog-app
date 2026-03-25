@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block title %}{{ album['title'] }} — Inkwell{% endblock %}
+
+{% block content %}
+<div class="detail-wrapper">
+
+  <div class="detail-nav">
+    <a href="{{ url_for('albums') }}" class="back-link">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+      Back to all albums
+    </a>
+  </div>
+
+  <article class="album-detail-article">
+    <div class="album-detail-cover" style="background-image: url(&quot;{{ album['cover_url'] }}&quot;)"></div>
+    
+    <header class="detail-header">
+      <div class="detail-meta">
+        <span class="detail-category">Album</span>
+        <span class="detail-date">{{ album['created_at'][:10] }}</span>
+      </div>
+      <h1 class="detail-title">{{ album['title'] }}</h1>
+      <p class="album-curated">From User #{{ album['user_id'] }}</p>
+    </header>
+
+    <div class="detail-divider"></div>
+
+    <div class="detail-content">
+      {% if album['description'] and album['description'].strip() %}
+        <p>{{ album['description'] }}</p>
+      {% else %}
+        <p>A curated collection of moments and memories.</p>
+      {% endif %}
+    </div>
+  </article>
+
+</div>
+{% endblock %}
